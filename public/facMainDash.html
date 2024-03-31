@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+         /* body {
+        background-color: #f8e4dd;
+         }*/
+        #container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px; /* Add margin between the elements */
+        }
+
+        #tableContainer,
+        #graphContainer {
+            flex-basis: 48%; /* Set the width of each container */
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 50px; /* Add margin at the bottom */
+            width: 100%; /* Make the table fill its container */
+            margin-bottom: 10px; /* Add margin at the bottom */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #percentageDisplay {
+            margin-bottom: 20px; /* Add margin at the bottom */
+            font-size: 20px;
+            font-weight: bold;
+            font-style: italic;
+            text-align: center;
+        }
+
+        #doubleBarGraph {
+            margin-top: 50px;
+            max-width: 100%; /* Ensure the graph doesn't overflow its container */
+            height: auto; /* Allow the graph to adjust its height */
+        }
+        #proofsButton {
+            margin-top: 20px;
+        }
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Criteria Summary</h1>
+    <h2 id="percentageDisplay"></h2>
+    <div id="container">
+        <div id="tableContainer">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Maximum Marks</th>
+                        <th>Target Score</th>
+                        <th>Your Score</th>
+                        <th>Section Dashboard</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+        <!-- Double Bar Graph -->
+        <div id="graphContainer">
+            <canvas id="doubleBarGraph"></canvas>
+        </div>
+    </div>
+    <button id="proofsButton">Proofs</button>
+
+
+    <script src="../dashboard.js"></script>
+
+    <script>
+        var userId = localStorage.getItem('userId');
+        // The dashboard.js code goes here
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch(`http://localhost:5000/getData?criteriaLabels=c1,c2,c3,c4,c5&userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateTable(data);
+
+                    updateChart(data);
+                    calculatePercentage(userId);
+                })
+                .catch(error => {
+                    console.error('Error fetching or processing data:', error.message);
+                });
+                const proofsButton = document.getElementById('proofsButton');
+                proofsButton.addEventListener('click', () => {
+                window.location.href = `facProof.html?userId=${userId}`;
+            });
+        });
+
+        function updateTable(data) {
+            const tableBody = document.querySelector('table tbody');
+            // Clear existing rows
+            tableBody.innerHTML = '';
+            const maxScores = [60, 50, 60, 40, 60];
+            let i = 0;
+            // Populate the table with data
+            data.criteriaLabels.forEach(label => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = label;
+                row.insertCell(1).textContent = maxScores[i++];
+                row.insertCell(2).textContent = data.targetScores[data.criteriaLabels.indexOf(label)];
+                row.insertCell(3).textContent = data.yourScores[data.criteriaLabels.indexOf(label)];
+                // Add a button to each row
+                const buttonCell = row.insertCell(4);
+                const button = document.createElement('button');
+                button.textContent =`${label} Dashboard`;
+                button.addEventListener('click', () => {
+                    window.location.href = `dashboard${label}.html?userId=${userId}`;
+                });
+                buttonCell.appendChild(button);
+            });
+        }
+
+        function updateChart(data) {
+            const ctx = document.getElementById('doubleBarGraph').getContext('2d');
+            // Create a double bar chart
+            const doubleBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.criteriaLabels,
+                    datasets: [
+                    {
+                        label: 'Target Score',
+                        data: data.targetScores,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)', // Reddish color
+                        borderColor: 'rgba(255, 99, 132, 1)', // Reddish color
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Your Score',
+                        data: data.yourScores,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Greenish color
+                        borderColor: 'rgba(75, 192, 192, 1)', // Greenish color
+                        borderWidth: 1,
+                    },
+                    ],
+                },
+            });
+        }
+
+        function calculatePercentage(userId){
+            fetch(`http://localhost:5000/getPercentage?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let percentage = data.percentage || 0;
+                    if (percentage > 100) {
+                        percentage = 100;
+                    }
+                    const percentageDisplay = document.getElementById('percentageDisplay');
+                    percentageDisplay.textContent = `Percentage of target attainment: ${percentage.toFixed(2)}%`;
+                })
+                .catch(error => {
+                    console.error('Error fetching or processing data:', error.message);
+                });
+                
+        }
+    
+    </script>
+</body>
+</html>

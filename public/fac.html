@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    
+        button:hover {
+            background-color: #45a049;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Faculty Dashboard</h1>
+
+    <table border="1">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <td id="id"></td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td id="name"></td>
+            </tr>
+            <tr>
+                <th>Designation</th>
+                <td id="designation"></td>
+            </tr>
+            <tr>
+                <th>Academic Experience</th>
+                <td id="academicExp"></td>
+            </tr>
+            <tr>
+                <th>Industry Experience</th>
+                <td id="industryExp"></td>
+            </tr>
+            <tr>
+                <th>Total Experience</th>
+                <td id="totalExp"></td>
+            </tr>
+            <tr>
+                <th>Department</th>
+                <td id="dept"></td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+    <button id="progress">Faculty Progress</button> 
+    </center>
+    <canvas id="doubleBarGraph"></canvas>
+
+    <!-- Include your dashboard.js script -->
+    <script src="dashboard.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+        console.log('ID extracted from URL:', userId);
+        document.addEventListener('DOMContentLoaded', function () {
+            // Extract id from the URL
+            
+            // Fetch data from the server using the extracted id
+            fetch(`http://localhost:5000/getDataHOD?id=${userId}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received from server:', data);
+                    // Update the table
+                    updateTable(data);
+
+                })
+                .catch(error => {
+                    console.error('Error fetching or processing data:', error.message);
+                });
+        }); 
+
+        function updateTable(data) {
+            console.log('Updating table with data:', data);
+            const rowData = data[0]; // Assuming the data array contains only one item
+            document.getElementById('id').textContent = rowData.id;
+            document.getElementById('name').textContent = rowData.name;
+            document.getElementById('designation').textContent = rowData.designation;
+            document.getElementById('academicExp').textContent = rowData.academicExp;
+            document.getElementById('industryExp').textContent = rowData.industryExp;
+            document.getElementById('totalExp').textContent = rowData.totalExp;
+            document.getElementById('dept').textContent = rowData.dept;
+        }
+
+        document.getElementById('progress').addEventListener('click', function () {
+            const name = document.getElementById('name').textContent;
+            window.location.href = `facDash.html?userId=${userId}&name=${encodeURIComponent(name)}`;
+        });
+
+    </script>
+</body>
+</html>

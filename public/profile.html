@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experience Form</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover; /* or 'contain' */
+  background-position: center top;
+  background-image: url('Profile bg.png');
+}
+
+
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    #totalExperience {
+      background-color: #eee;
+      cursor: not-allowed;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .required::after {
+      content: '*';
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="form-container">
+    <h1 align="center">Profile Page</h1>
+    <form id="experienceForm">
+      <label for="id" class="required">ID:</label>
+      <input type="text" id="id" name="id" required>
+
+      <label for="name" class="required">Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="designation" class="required">Designation:</label>
+      <input type="text" id="designation" name="designation" required>
+
+      <label for="academicExperience" class="required">Academic Experience (in years):</label>
+      <input type="number" id="academicExperience" name="academicExperience" oninput="calculateTotalExperience()" required>
+
+      <label for="industryExperience" class="required">Industry Experience (in years):</label>
+      <input type="number" id="industryExperience" name="industryExperience" oninput="calculateTotalExperience()" required>
+
+      <label for="totalExperience">Total Experience (automatically calculated):</label>
+      <input type="text" id="totalExperience" name="totalExperience" readonly>
+
+      <label for="dept">Department:</label>
+      <select id="dept" name="dept" required>
+        <option value="" selected disabled>Select Department</option>
+        <option value="CSE">CSE</option>
+        <option value="AIML">AIML</option>
+        <option value="IT">IT</option>
+        <option value="ECE">ECE</option>
+        <option value="EEE">EEE</option>
+        <option value="BSH">BSH</option>
+      </select>
+
+      <button type="button" onclick="updateDetailsToDB()">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    function calculateTotalExperience() {
+      var academicExp = parseFloat(document.getElementById('academicExperience').value) || 0;
+      var industryExp = parseFloat(document.getElementById('industryExperience').value) || 0;
+      var totalExp = academicExp + industryExp;
+      document.getElementById('totalExperience').value = totalExp;
+    }
+
+    function updateDetailsToDB() {
+    var id = document.getElementById('id').value.trim();
+    var name = document.getElementById('name').value.trim();
+    var designation = document.getElementById('designation').value.trim();
+    var academicExperience = parseFloat(document.getElementById('academicExperience').value.trim());
+    var industryExperience = parseFloat(document.getElementById('industryExperience').value.trim());
+    var totalExperience = parseFloat(document.getElementById('totalExperience').value.trim()); 
+    var dept = document.getElementById('dept').value.trim();
+
+
+    if (!id || !name || !designation || !dept ) {
+        alert("All fields are required.");
+        return; // Stop further execution
+    }
+
+    // Proceed with updating details
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://localhost:4000/updateDetails', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    var requestData = {
+        idCell: id,
+        nameCell: name,
+        designationCell: designation,
+        academicCell: academicExperience,
+        industryCell: industryExperience,
+        totalCell: totalExperience,
+        deptCell : dept
+    };
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                console.log(xhr.responseText);
+                alert('Details updated successfully!');
+                var hod = localStorage.getItem('hod');
+                if (hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }           } else {
+                console.error('Failed to update details:', xhr.statusText);
+                alert('Failed to update details. Status: ' + xhr.status);
+            }
+        }
+    };
+    xhr.send(JSON.stringify(requestData));
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score Entry Table with Exam Registration</title>
+  <style>
+     body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f0f8ff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 16px;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <table>
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+        <th>Upload(Accepted formats: PDF, Word (.doc, .docx))</th>
+        <th>Uploaded Files</th> <!-- New column for uploaded files -->
+        <th>Total Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>3.3</td>
+        <td>NPTEL 12-week courses:5 points each<br>
+            NPTEL 8-week courses: 3 points each<br>
+            NPTEL 4-week courses/FDP:1 point each<br><br><br>
+            Educational Certification through VEDIC Level II: 5 points<br>
+            <b>Max:10</b>
+        </td>
+        <td>
+            <form>
+                <label><input type="radio" name="nptel" value="5" onchange="updateTotalScore()"> NPTEL 12-week courses</label><br>
+                <label><input type="radio" name="nptel" value="3" onchange="updateTotalScore()"> NPTEL 8-week courses</label><br>
+                <label><input type="radio" name="nptel" value="1" onchange="updateTotalScore()"> NPTEL 4-week courses/FDP</label><br>
+                <label><input type="checkbox" name="vedic" value="5" onchange="updateTotalScore()"> Educational Certification through VEDIC Level II</label><br>
+                <label><input type="checkbox" name="industry" value="5" onchange="updateTotalScore()"> Industry Certifications</label><br>
+              </form>
+        </td>
+        <td>
+          <form id="examRegistrationForm1">
+
+            <label for="certificate1">Upload Certificate:</label>
+            <input type="file" id="certificate1" name="certificate" accept=".pdf, .doc, .docx" onchange="updateFileNames(1)" required multiple>
+            <small>Accepted formats: PDF, Word (.doc, .docx)</small>
+            <br>
+            <small>Maximum file size: 5 MB</small>
+            <div id="error-message1"></div>
+            <button type="button" onclick="validateFormAndSubmit(1)">Submit</button>
+            <button type="button" id="downloadButton" style="display: none;" onclick="downloadFile()">Download</button>
+          </form>
+        </td>
+        <td id="uploadedFileName1"></td> <!-- New cell for uploaded files -->
+        <td id="totalScore"></td>
+
+      </tr>
+     
+    </tbody>
+  </table>
+
+  <script>
+    function updateTotalScore() {
+  var nptelRadios = document.querySelectorAll('input[name="nptel"]:checked');
+  var vedicCheckbox = document.querySelector('input[name="vedic"]');
+  var industryCheckbox = document.querySelector('input[name="industry"]');
+
+  var totalScore = 0;
+
+  // Calculate score for NPTEL courses
+  nptelRadios.forEach(function(radio) {
+    totalScore += parseInt(radio.value);
+  });
+
+  // Add score for VEDIC certification if checked
+  if (vedicCheckbox.checked) {
+    totalScore += parseInt(vedicCheckbox.value);
+  }
+
+  // Add score for Industry certification if checked
+  if (industryCheckbox.checked) {
+    totalScore += parseInt(industryCheckbox.value);
+  }
+
+  // Display the total score
+  var totalScoreCell = document.getElementById('totalScore');
+  
+  totalScoreCell.textContent = totalScore;
+
+  return totalScore;
+}
+
+var userId = localStorage.getItem('userId');
+
+function updateTotalScoreToDB(columnName) {
+      var totalScore = updateTotalScore(); 
+      if (totalScore > 10) {
+        totalScore = 10;
+        var totalScoreCell = document.getElementById('totalScore');
+        totalScoreCell.textContent = totalScore;
+        alert('Score exceeded maximum. Score updated is ' + totalScore);
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://localhost:4000/updateTotalScore?userId=${userId}`, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      var requestData = {
+        totalScore: totalScore,
+        columnName: columnName 
+      };
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Total score updated successfully!');
+            var hod = localStorage.getItem('hod');
+            if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }      } else {
+            console.error('Failed to update total score:', xhr.statusText);
+            alert('Score exceeded Maximum: ' + xhr.status);
+          }
+        }
+      };
+      xhr.send(JSON.stringify(requestData));
+    }
+
+    function updateFileNames(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var uploadedFileNameCell = document.getElementById('uploadedFileName' + rowNumber);
+
+      uploadedFileNameCell.innerHTML = '';
+
+      for (var i = 0; i < fileInput.files.length; i++) {
+        var fileName = fileInput.files[i].name;
+        uploadedFileNameCell.innerHTML += fileName + '<br>';
+      }
+    }
+
+    function validateForm(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var errorMessage = document.getElementById('error-message' + rowNumber);
+      var allowedFormats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      var maxSize = 5 * 1024 * 1024; // 5 MB
+
+      if (fileInput.files.length === 0) {
+        errorMessage.innerHTML = 'Please select a file.';
+        return false;
+      }
+
+      var file = fileInput.files[0];
+
+      if (!allowedFormats.includes(file.type)) {
+        errorMessage.innerHTML = 'Invalid file format. Accepted formats: PDF, Word (.doc, .docx)';
+        return false;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.innerHTML = 'File size exceeds the maximum limit (5 MB).';
+        return false;
+      }
+
+      errorMessage.innerHTML = '';
+      return true;
+    }
+
+    function validateFormAndSubmit(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+
+      if (validateForm(rowNumber)) {
+        var formData = new FormData();
+        for (var i = 0; i < fileInput.files.length; i++) {
+          formData.append('certificates', fileInput.files[i]);
+        }
+
+        uploadFiles(formData);
+      }
+    }
+
+    function uploadFiles(formData) {
+      var userId = localStorage.getItem('userId');
+      var columnName = 'c33';
+      var xhr = new XMLHttpRequest();
+    xhr.open('POST', `http://localhost:4000/uploadFiles?userId=${userId}&columnName=${columnName}`, true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Files uploaded successfully!');
+            updateTotalScoreToDB('c33');
+          } else {
+            console.error('Failed to upload files:', xhr.statusText);
+            alert('Failed to upload files. Status: ' + xhr.status);
+          }
+        }
+      };
+
+      xhr.send(formData);
+    }
+    
+
+  </script>
+
+</body>
+</html>

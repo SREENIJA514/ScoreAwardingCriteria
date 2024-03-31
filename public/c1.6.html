@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score Entry Table with Exam Registration</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f0f8ff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 16px;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .subject-checkbox {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <table>
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+        <th>Upload(Accepted formats: PDF, Word (.doc, .docx))</th>
+        <th>Uploaded Files</th>
+        <th>Total Score</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>1.6</td>
+        <td>
+          Quality of course file prepared as per the template shared by the institute and quality of contents.<br>
+          • subject 1 (3 marks) <br>
+          • subject 2 (3 marks)<br>
+          <b>Max:6</b>
+        </td>
+        <td>
+          <!-- Place the checkboxes inside the "Score" column -->
+          <div>
+            <label for="subject1Checkbox">subject 1</label>
+            <input type="checkbox" id="subject1Checkbox" class="subject-checkbox" onchange="updateTotalScore(3)">
+          </div>
+          <div>
+            <label for="subject2Checkbox">subject 2</label>
+            <input type="checkbox" id="subject2Checkbox" class="subject-checkbox" onchange="updateTotalScore(3)">
+          </div>
+          
+        </td>
+        <td>
+          <form id="examRegistrationForm1">
+
+            <label for="certificate1">Upload Certificate:</label>
+            <input type="file" id="certificate1" name="certificate" accept=".pdf, .doc, .docx" onchange="updateFileNames(1)" required multiple>
+            <small>Accepted formats: PDF, Word (.doc, .docx)</small>
+            <br>
+            <small>Maximum file size: 5 MB</small>
+            <div id="error-message1"></div>
+            <button type="button" onclick="validateFormAndSubmit(1)">Submit</button>
+            <button type="button" id="downloadButton" style="display: none;" onclick="downloadFile()">Download</button>
+          </form>
+        </td>
+        <td id="uploadedFileName1"></td>
+        <td id="totalScore"></td>
+      </tr>
+      <!-- Add more rows as needed -->
+    </tbody>
+  </table>
+
+  <script>
+    function updateTotalScore(score) {
+      var totalScoreCell = document.getElementById('totalScore');
+      var checkboxes = document.querySelectorAll('.subject-checkbox');
+      var selectedCount = 0;
+
+      checkboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+          selectedCount++;
+        }
+      });
+      var tot = selectedCount * 3;
+      if (tot > 6){
+        tot = 6;
+        errorMessage.innerHTML = 'Score exceeded maximum';
+      }
+      totalScoreCell.textContent = tot;
+      return selectedCount * 3;
+    }
+    var userId = localStorage.getItem('userId');
+
+    function updateTotalScoreToDB(columnName) {
+      var totalScore = updateTotalScore(1); 
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://localhost:4000/updateTotalScore?userId=${userId}`, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      var requestData = {
+        totalScore: totalScore,
+        columnName: columnName 
+      };
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Total score updated successfully!');
+            var hod = localStorage.getItem('hod');
+            if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }        } else {
+            console.error('Failed to update total score:', xhr.statusText);
+            alert('Score exceeded Maximum: ' + xhr.status);
+          }
+        }
+      };
+      xhr.send(JSON.stringify(requestData));
+    }
+
+    function updateFileNames(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var uploadedFileNameCell = document.getElementById('uploadedFileName' + rowNumber);
+
+      uploadedFileNameCell.innerHTML = '';
+
+      for (var i = 0; i < fileInput.files.length; i++) {
+        var fileName = fileInput.files[i].name;
+        uploadedFileNameCell.innerHTML += fileName + '<br>';
+      }
+    }
+
+    function validateForm(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var errorMessage = document.getElementById('error-message' + rowNumber);
+      var allowedFormats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      var maxSize = 5 * 1024 * 1024; // 5 MB
+
+      if (fileInput.files.length === 0) {
+        errorMessage.innerHTML = 'Please select a file.';
+        return false;
+      }
+
+      var file = fileInput.files[0];
+
+      if (!allowedFormats.includes(file.type)) {
+        errorMessage.innerHTML = 'Invalid file format. Accepted formats: PDF, Word (.doc, .docx)';
+        return false;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.innerHTML = 'File size exceeds the maximum limit (5 MB).';
+        return false;
+      }
+
+      errorMessage.innerHTML = '';
+      return true;
+    }
+
+    function validateFormAndSubmit(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+
+      if (validateForm(rowNumber)) {
+        var formData = new FormData();
+        for (var i = 0; i < fileInput.files.length; i++) {
+          formData.append('certificates', fileInput.files[i]);
+        }
+
+        uploadFiles(formData);
+      }
+    }
+
+    function uploadFiles(formData) {
+      var userId = localStorage.getItem('userId');
+      var columnName = 'c16';
+      var xhr = new XMLHttpRequest();
+    xhr.open('POST', `http://localhost:4000/uploadFiles?userId=${userId}&columnName=${columnName}`, true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Files uploaded successfully!');
+            updateTotalScoreToDB('c16');
+          } else {
+            console.error('Failed to upload files:', xhr.statusText);
+            alert('Failed to upload files. Status: ' + xhr.status);
+          }
+        }
+      };
+
+      xhr.send(formData);
+    }
+    
+  </script>
+
+</body>
+</html>

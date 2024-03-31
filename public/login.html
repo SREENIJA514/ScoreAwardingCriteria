@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 20%;
+    background-position: center top;
+    background-image: url('bvrit logo.jpg');
+    background-color: #f0f8ff;
+}
+
+header {
+    color: white;
+    text-align: center;
+    padding: 50px;
+    max-width: 800px;
+    margin: 0 auto;
+    height: 100px;
+}
+
+header img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+#framesContainer {
+    display: flex;
+    flex: 1;
+    margin-top: 50px; /* Add space between frames */
+}
+
+#leftFrame {
+    background-color: #f2f2f2;
+    padding: 20px;
+    flex: 2; /* Increase the size of the left frame */
+    flex-direction: column;
+}
+
+#leftFrame textarea {
+    width: 100%;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+#rightFrame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* Adjusted the flex size */
+}
+
+.login-box-container {
+    text-align: center;
+    width: 300px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.login-box {
+    text-align: left;
+}
+
+.login-box p {
+    margin: 0;
+}
+
+.login-box label {
+    display: inline-block;
+    width: 80px;
+    margin-bottom: 5px;
+}
+
+.login-box input {
+    margin-bottom: 10px;
+    padding: 8px;
+    width: calc(100% - 80px);
+    box-sizing: border-box;
+}
+
+.login-box button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.option-button {
+    padding: 12px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: 2px solid #357835;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.option-button:hover {
+    background-color: #45a049;
+    border-color: #3a923a;
+}
+h1 {
+            margin-top: 80px; /* Adjust the margin-top to move the h1 down */
+        }
+
+    </style>
+    </head>
+
+<body>
+    <header>
+        <img src="path/to/your/image.jpg" alt="">
+    </header>
+
+    <h1 align = center>Score Awarding Criteria</h1>
+    <div id="framesContainer">
+       <!-- <div id="leftFrame">
+            <textarea rows="10" cols="30">Text Area on the Left</textarea>
+        </div>-->
+        <div id="rightFrame">
+            <div class="login-box-container" id="loginBoxContainer">
+                <h2 style="text-align: center; font-weight: bold;">Login<br>(Staff ID)</h2>
+                <div class="login-box">
+                    <form id="loginForm">
+                        <label for="userId">User ID:</label>
+                        <input type="text" id="userId" name="userId" required><br><br>
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required onkeydown="handleKeyPress(event)">
+                        <button type="button" onclick="login()">Login</button>
+                        <br><br> First time login password : 'welcome'
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+
+    <script>
+        function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            login();
+        }
+    }
+        function login() {
+            var userId = document.getElementById("userId").value;
+            var password = document.getElementById("password").value;
+
+            if (userId.trim() === '' || password.trim() === '') {
+                alert("User ID or Password field can't be empty!");
+                return;
+            }
+            localStorage.setItem('userId', userId);
+            validatePassword(userId, password)
+        }
+
+       async function validatePassword(userId, password) {
+
+    try {
+        const response = await fetch(`http://localhost:5000/userValidation?userId=${userId}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        if (response.status === 404) { // Check for 404 status explicitly
+        alert("Invalid user!"); // No such user exists
+        return false;
+    } else if (data.password === password) {
+            alert("Logged in with User ID: " + userId);
+            localStorage.setItem('hod', data.hod);
+            if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }
+            
+            return true;
+        } else {
+            alert("Invalid User ID or Password!"); 
+            return false;
+        }
+    } catch (error) {
+        console.error('Error fetching or processing user validation:', error.message);
+        return false;
+    }
+}
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 25%;
+      background-position: center top;
+      background-image: url('bvrit logo.jpg');
+      margin-top: -20px;
+    }
+
+    header {
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      height: 80px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: -50px;
+      height: 100vh;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 20px;
+    }
+
+    button {
+      background-color: #409b43;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-right: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0a5811;
+    
+    }
+    .buttons a{
+      color: white;
+            padding: 3px 3px;
+            text-decoration: none;
+            display: block;
+    }
+
+    .criteria-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .criteria-box a {
+            color: white;
+            padding: 3px 3px;
+            text-decoration: none;
+            display: block;
+        }
+
+    .criteria-box.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <img src="" alt="Logo">
+</div>
+
+<div class="container">
+  <div class="buttons">
+    <button id="CSE">CSE</button>
+    <button id="AIML">AIML</button>
+    <button id="IT">IT</button>
+    <button id="ECE">ECE</button>
+    <button id="EEE">EEE</button>
+    <button id="BS&H">BS&H</button>
+  </div>
+
+<script>
+  document.getElementById('CSE').addEventListener('click', function() {
+    window.location.href = 'dept.html?dept=CSE';
+  });
+  
+  document.getElementById('AIML').addEventListener('click', function() {
+    window.location.href = 'dept.html?dept=AIML';
+  });
+  
+  document.getElementById('IT').addEventListener('click', function() {
+    window.location.href = 'dept.html?dept=IT';
+  });
+  
+  document.getElementById('ECE').addEventListener('click', function() {
+    window.location.href = 'dept.html?dept=ECE';
+  });
+  
+  document.getElementById('EEE').addEventListener('click', function() {
+    window.location.href = 'dept.html?dept=EEE';
+  });
+  
+  document.getElementById('BS&H').addEventListener('click', function() {
+    window.location.href = 'dept.html?dept=BSH';
+  });
+</script>
+
+</body>
+</html>

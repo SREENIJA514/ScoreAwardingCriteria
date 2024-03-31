@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score Entry Table with Exam Registration</title>
+  <style>
+    /* Styles from the base code */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f0f8ff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 16px;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .subject-radio {
+      margin-bottom: 8px;
+    }
+
+    /* Additional styles from the new code */
+    .total-score-heading {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .total-score {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <table>
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+        <th>Total Score</th> <!-- New column for total score -->
+        <th>Upload(Accepted formats: PDF, Word (.doc, .docx)) Maximum file size: 5 MB</th>
+        <th>Uploaded Files</th> <!-- New column for uploaded files -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2.1</td>
+        <td>
+          Publications & Articles / Chapters published in Books, Published with Institute affiliation.
+<br><br>
+<strong>• 15points (max) </strong><br><br>
+Note: In case the paper is the result of research collaboration with other Institutes/Universities, the author at the first place of the authors of this Institute gets the points mentioned.
+
+
+        </td>
+        <td>
+            <!-- Place the radio buttons inside the "Score" column -->
+            <strong>For International Indexed (SCI/SCIE) Journal:<br><br></strong>
+            <div>
+              <label for="excellentRadio">•	First/Corresponding Author:  
+                6 points per paper
+                </label>
+              <input type="radio" id="a" class="subject-radio" name="score" value="6" onchange="updateTotalScore()">
+            </div>
+            <div>
+              <label for="goodRadio">•	Research Supervisor/Co-Supervisor/Scholar as Author: 
+                4 points per paper
+                </label>
+              <input type="radio" id="b" class="subject-radio" name="score" value="4" onchange="updateTotalScore()">
+            </div>
+            <strong>For International Indexed (SCI/SCIE) Journal:<br><br></strong>
+            <div>
+              <label for="acceptableRadio">•	First/Corresponding Author: 5 points per paper</label>
+              <input type="radio" id="c" class="subject-radio" name="score1" value="5" onchange="updateTotalScore()">
+            </div>
+            <div>
+              <label for="unsatisfactoryRadio">•	Research Supervisor/Co-Supervisor/Scholar as Author: 3 points per paper
+                </label>
+              <input type="radio" id="d" class="subject-radio" name="score1" value="3" onchange="updateTotalScore()">
+            </div>
+  
+            <div>
+              <label for="excellentRadio"><strong>For International Conference Indexed (Scopus/WoS/ABDC) papers / National Journal indexed (Scopus/WoS) papers: 3 points per paper (For 1st and 2nd Authors)</strong>
+              </label>
+              <input type="radio" id="e" class="subject-radio" name="labScore1" value="3" onchange="updateTotalScore()">
+            </div>
+            <div>
+              <label for="goodRadio"><strong>For National Conference Indexed papers: 2 point per paper (For 1st and 2nd Authors)</strong>></label>
+              <input type="radio" id="f" class="subject-radio" name="labScore2" value="2" onchange="updateTotalScore()">
+            </div>
+            <strong>For Articles / Chapters published in Books (Indexed)</strong>
+            <div>
+              <label for="acceptableRadio">•	Main author–International Publishers – 5 Points</label>
+              <input type="checkbox" id="g" class="subject-radio" name="labScore3" value="5" onchange="updateTotalScore()">
+            </div>
+            <div>
+              <label for="unsatisfactoryRadio"> One of first 3 authors–International Publishers – 3 Points</label>
+              <input type="checkbox" id="h" class="subject-radio" name="labScore3" value="3" onchange="updateTotalScore()">
+            </div>
+            <div>
+              <label for="unsatisfactoryRadio"> •	One of the first 5 authors–International Publishers – 1 Point</label>
+              <input type="checkbox" id="i" class="subject-radio" name="labScore4" value="1" onchange="updateTotalScore()">
+            </div>
+            <div>
+              <label for="unsatisfactoryRadio">	One of the Author - National Reputed Publishers – 2 points</label>
+              <input type="checkbox" id="j" class="subject-radio" name="labScore5" value="2" onchange="updateTotalScore()">
+            </div>
+            
+            
+        </td>
+        <td class="total-score" id="totalScore">0</td> <!-- New cell for total score -->
+        <td>
+          <form id="examRegistrationForm1">
+
+            <label for="certificate1">Upload Certificate:</label>
+            <input type="file" id="certificate1" name="certificate" accept=".pdf, .doc, .docx" onchange="updateFileNames(1)" required multiple>
+            <small>Accepted formats: PDF, Word (.doc, .docx)</small>
+            <br>
+            <small>Maximum file size: 5 MB</small>
+            <div id="error-message1"></div>
+            <button type="button" onclick="validateFormAndSubmit(1)">Submit</button>
+            <button type="button" id="downloadButton" style="display: none;" onclick="downloadFile()">Download</button>
+          </form>
+        </td>
+        <td id="uploadedFileName1"></td> <!-- New cell for uploaded files -->
+      </tr>
+      <!-- Add more rows as needed -->
+    </tbody>
+  </table>
+
+  <script>
+    /* Functions from the base code */
+
+    function updateTotalScore() {
+  // Retrieve the values of selected options
+  var a = document.getElementById('a').checked ? parseInt(document.getElementById('a').value) : 0;
+  var b = document.getElementById('b').checked ? parseInt(document.getElementById('b').value) : 0;
+  var c = document.getElementById('c').checked ? parseInt(document.getElementById('c').value) : 0;
+  var d = document.getElementById('d').checked ? parseInt(document.getElementById('d').value) : 0;
+  var e = document.getElementById('e').checked ? parseInt(document.getElementById('e').value) : 0;
+  var f = document.getElementById('f').checked ? parseInt(document.getElementById('f').value) : 0;
+  var g = document.getElementById('g').checked ? parseInt(document.getElementById('g').value) : 0;
+  var h = document.getElementById('h').checked ? parseInt(document.getElementById('h').value) : 0;
+  var i = document.getElementById('i').checked ? parseInt(document.getElementById('i').value) : 0;
+  var j = document.getElementById('j').checked ? parseInt(document.getElementById('j').value) : 0;
+
+  // Calculate the total score
+  var totalScore = a + b + c + d + e + f + g + h + i + j;
+
+  // Limit the total score to 15 if it exceeds
+  
+
+  // Update the total score displayed
+  var totalScoreCell = document.getElementById('totalScore');
+  totalScoreCell.textContent = totalScore;
+
+  // Return the total score
+  return totalScore;
+}
+
+    
+    var userId = localStorage.getItem('userId');
+
+    function updateTotalScoreToDB(columnName) {
+      var totalScore = updateTotalScore(1); 
+
+      if (totalScore > 15) {
+        totalScore = 15;
+        var totalScoreCell = document.getElementById('totalScore');
+        totalScoreCell.textContent = 15;
+        alert('Score exceeded maximum. Score updated is ' + totalScore);
+      }
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://localhost:4000/updateTotalScore?userId=${userId}`, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      var requestData = {
+        totalScore: totalScore,
+        columnName: columnName 
+      };
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Total score updated successfully!');
+            var hod = localStorage.getItem('hod');
+            if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }      } else {
+            console.error('Failed to update total score:', xhr.statusText);
+            alert('Score exceeded Maximum: ' + xhr.status);
+          }
+        }
+      };
+      xhr.send(JSON.stringify(requestData));
+    }
+
+    function updateFileNames(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var uploadedFileNameCell = document.getElementById('uploadedFileName' + rowNumber);
+
+      uploadedFileNameCell.innerHTML = '';
+
+      for (var i = 0; i < fileInput.files.length; i++) {
+        var fileName = fileInput.files[i].name;
+        uploadedFileNameCell.innerHTML += fileName + '<br>';
+      }
+    }
+
+    function validateForm(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var errorMessage = document.getElementById('error-message' + rowNumber);
+      var allowedFormats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      var maxSize = 5 * 1024 * 1024; // 5 MB
+
+      if (fileInput.files.length === 0) {
+        errorMessage.innerHTML = 'Please select a file.';
+        return false;
+      }
+
+      var file = fileInput.files[0];
+
+      if (!allowedFormats.includes(file.type)) {
+        errorMessage.innerHTML = 'Invalid file format. Accepted formats: PDF, Word (.doc, .docx)';
+        return false;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.innerHTML = 'File size exceeds the maximum limit (5 MB).';
+        return false;
+      }
+
+      errorMessage.innerHTML = '';
+      return true;
+    }
+
+    function validateFormAndSubmit(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+
+      if (validateForm(rowNumber)) {
+        var formData = new FormData();
+        for (var i = 0; i < fileInput.files.length; i++) {
+          formData.append('certificates', fileInput.files[i]);
+        }
+
+        uploadFiles(formData);
+      }
+    }
+
+    function uploadFiles(formData) {
+      var userId = localStorage.getItem('userId');
+      var columnName = 'c21';
+      var xhr = new XMLHttpRequest();
+    xhr.open('POST', `http://localhost:4000/uploadFiles?userId=${userId}&columnName=${columnName}`, true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Files uploaded successfully!');
+            updateTotalScoreToDB('c21');
+          } else {
+            console.error('Failed to upload files:', xhr.statusText);
+            alert('Failed to upload files. Status: ' + xhr.status);
+          }
+        }
+      };
+
+      xhr.send(formData);
+    }
+    
+
+  </script>
+
+</body>
+</html>

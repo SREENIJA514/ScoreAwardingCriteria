@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score Entry Table with Exam Registration</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f0f8ff;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 16px;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <table>
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+        <th>Total Score</th>
+        <th>Upload(Accepted formats: PDF, Word (.doc, .docx))<br>Maximum file size: 5 MB</th>
+        <th>Uploaded Files</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>5.5</td>
+        <td>Institutional Level/Department Level Responsibilities
+            10 points <br><b>Max:10</b></td>
+        <td>
+          <div>
+          <input type="radio" id="score1_1" name="score1" value="10" onchange="updateTotalScore(1)">
+          <label for="score1_1">Dean/Associate Dean/ CoE /HOD/TPO/ Hostel In-charge/Transport In-charge/ SPOC-IIC/NIRF/NBA/NAAC: </label>
+        </div>
+          <br>
+          <div>
+          <input type="radio" id="score1_2" name="score1" value="7" onchange="updateTotalScore(1)">
+          <label for="score1_2">Institutional SPOC- NPTEL/Skill Development/PALS/NSS/ Webmaster/ VEDIC/Addl CoEs /Associate HOD/Asst. TPOs/ATL/EDC/Idea Labs/TBI/ Partnerships</label>
+        </div>
+          <br>
+          <div>
+          <input type="radio" id="score1_3" name="score1" value="5" onchange="updateTotalScore(1)">
+          <label for="score1_3">Department Coordinators for Examination/ Timetable / Program Coordinator / Class In-charge/ IQAC/ NBA/NAAC /NIRF/ Research/Project Coordinator /Placements/Ecap & Webmaster/ IIC Coordinator</label>
+        </div>
+          <!-- Add more radio buttons with descriptions and marks as needed -->
+          
+        </td>
+        <td><textarea id="totalScore1" name="totalScore1" rows="1" readonly></textarea></td>
+        <td>
+          <form id="examRegistrationForm1" >
+            <label for="certificate1">Upload Certificate:</label>
+            <input type="file" id="certificate1" name="certificate" accept=".pdf, .doc, .docx" onchange="updateFileNames(1)" required>
+            <small>Accepted formats: PDF, Word (.doc, .docx)</small>
+            <br>
+            <small>Maximum file size: 5 MB</small>
+            <div id="error-message1"></div>
+            <button type="button" onclick="validateFormAndSubmit(1)">Submit</button>
+          </form>
+        </td>
+        <td id="uploadedFileName1"></td>
+      </tr>
+      <!-- Repeat the above row structure for other rows as needed -->
+    </tbody>
+  </table>
+
+  <script>
+    function updateTotalScore(group) {
+    var radioButtons = document.getElementsByName('score' + group);
+    var totalScoreField = document.getElementById('totalScore' + group);
+    var selectedValue = 0;
+
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            selectedValue = parseInt(radioButtons[i].value);
+            break;
+        }
+    }
+    if (selectedValue > 10){
+      selectedValue = 10;
+        errorMessage.innerHTML = 'Score exceeded maximum';
+      }
+    totalScoreField.value = selectedValue;
+
+    return selectedValue;
+}
+var userId = localStorage.getItem('userId');
+
+function updateTotalScoreToDB(columnName) {
+      var totalScore = updateTotalScore(1); 
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://localhost:4000/updateTotalScore?userId=${userId}`, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      var requestData = {
+        totalScore: totalScore,
+        columnName: columnName 
+      };
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Total score updated successfully!');
+            var hod = localStorage.getItem('hod');
+            if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }         } else {
+            console.error('Failed to update total score:', xhr.statusText);
+            alert('Score exceeded Maximum: ' + xhr.status);
+          }
+        }
+      };
+      xhr.send(JSON.stringify(requestData));
+    }
+
+    function updateFileNames(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var uploadedFileNameCell = document.getElementById('uploadedFileName' + rowNumber);
+
+      uploadedFileNameCell.innerHTML = '';
+
+      for (var i = 0; i < fileInput.files.length; i++) {
+        var fileName = fileInput.files[i].name;
+        uploadedFileNameCell.innerHTML += fileName + '<br>';
+      }
+    }
+
+    function validateForm(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var errorMessage = document.getElementById('error-message' + rowNumber);
+      var allowedFormats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      var maxSize = 5 * 1024 * 1024; // 5 MB
+
+      if (fileInput.files.length === 0) {
+        errorMessage.innerHTML = 'Please select a file.';
+        return false;
+      }
+
+      var file = fileInput.files[0];
+
+      if (!allowedFormats.includes(file.type)) {
+        errorMessage.innerHTML = 'Invalid file format. Accepted formats: PDF, Word (.doc, .docx)';
+        return false;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.innerHTML = 'File size exceeds the maximum limit (5 MB).';
+        return false;
+      }
+
+      errorMessage.innerHTML = '';
+      return true;
+    }
+
+    function validateFormAndSubmit(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+
+      if (validateForm(rowNumber)) {
+        var formData = new FormData();
+        for (var i = 0; i < fileInput.files.length; i++) {
+          formData.append('certificates', fileInput.files[i]);
+        }
+
+        uploadFiles(formData);
+      }
+    }
+
+    function uploadFiles(formData) {
+      var userId = localStorage.getItem('userId');
+      var columnName = 'c55';
+      var xhr = new XMLHttpRequest();
+    xhr.open('POST', `http://localhost:4000/uploadFiles?userId=${userId}&columnName=${columnName}`, true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Files uploaded successfully!');
+            updateTotalScoreToDB('c11');
+          } else {
+            console.error('Failed to upload files:', xhr.statusText);
+            alert('Failed to upload files. Status: ' + xhr.status);
+          }
+        }
+      };
+
+      xhr.send(formData);
+    }
+    
+  </script>
+
+</body>
+</html>

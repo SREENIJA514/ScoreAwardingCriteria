@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .download-button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .download-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Uploaded Proofs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Criteria</th>
+                <th>Files</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody></tbody> <!-- Table body will be populated dynamically -->
+    </table>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch(`http://localhost:5000/getProof?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateTable(data.files); // Adjusted to access 'files' property
+                })
+                .catch(error => {
+                    console.error('Error fetching or processing data:', error.message);
+                });
+        });
+
+        function updateTable(data) {
+            const tableBody = document.querySelector('tbody');
+            
+            // Clear existing rows
+            tableBody.innerHTML = '';
+
+            // Populate the table with data
+            data.forEach(item => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = item.columnName; 
+                row.insertCell(1).textContent = item.filename;
+                const buttonCell = row.insertCell(2);
+                const button = document.createElement('button');
+                button.textContent = 'Download';
+                button.className = 'download-button';
+                button.onclick = function() {
+                    // Get userId and filename of the clicked row
+                    const filename = encodeURIComponent(item.filename);
+                    // Send request to download endpoint
+                    window.location.href = `http://localhost:5000/download?userId=${userId}&filename=${filename}`;
+                };
+                buttonCell.appendChild(button);
+            });
+        }
+    </script>
+</body>
+</html>

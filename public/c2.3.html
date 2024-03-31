@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Entry Table with Exam Registration</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        form {
+            margin: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 16px;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 8px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        select {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        small {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+    </style>
+    <script>
+        function updateTotalScore() {
+    var score1 = calculateScore('score1');
+    var score2 = calculateScore('score2');
+
+    var totalScore = score1 + score2;
+
+    var totalScoreInput = document.getElementById('totalScore1');
+    totalScoreInput.value = totalScore;
+
+    return totalScore;
+}
+
+function calculateScore(scoreName) {
+    var checkboxes = document.getElementsByName(scoreName);
+    var totalScore = 0;
+
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            totalScore += parseInt(checkboxes[i].value);
+        }
+    }
+
+    return totalScore;
+}
+
+
+var userId = localStorage.getItem('userId');
+
+function updateTotalScoreToDB(columnName) {
+      var totalScore = updateTotalScore(); 
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://localhost:4000/updateTotalScore?userId=${userId}`, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      var requestData = {
+        totalScore: totalScore,
+        columnName: columnName 
+      };
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Total score updated successfully!');
+            var hod = localStorage.getItem('hod');
+            if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }       } else {
+            console.error('Failed to update total score:', xhr.statusText);
+            alert('Score exceeded Maximum: ' + xhr.status);
+          }
+        }
+      };
+      xhr.send(JSON.stringify(requestData));
+    }
+
+    function updateFileNames(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var uploadedFileNameCell = document.getElementById('uploadedFileName' + rowNumber);
+
+      uploadedFileNameCell.innerHTML = '';
+
+      for (var i = 0; i < fileInput.files.length; i++) {
+        var fileName = fileInput.files[i].name;
+        uploadedFileNameCell.innerHTML += fileName + '<br>';
+      }
+    }
+
+    function validateForm(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+      var errorMessage = document.getElementById('error-message' + rowNumber);
+      var allowedFormats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      var maxSize = 5 * 1024 * 1024; // 5 MB
+
+      if (fileInput.files.length === 0) {
+        errorMessage.innerHTML = 'Please select a file.';
+        return false;
+      }
+
+      var file = fileInput.files[0];
+
+      if (!allowedFormats.includes(file.type)) {
+        errorMessage.innerHTML = 'Invalid file format. Accepted formats: PDF, Word (.doc, .docx)';
+        return false;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.innerHTML = 'File size exceeds the maximum limit (5 MB).';
+        return false;
+      }
+
+      errorMessage.innerHTML = '';
+      return true;
+    }
+
+    function validateFormAndSubmit(rowNumber) {
+      var fileInput = document.getElementById('certificate' + rowNumber);
+
+      if (validateForm(rowNumber)) {
+        var formData = new FormData();
+        for (var i = 0; i < fileInput.files.length; i++) {
+          formData.append('certificates', fileInput.files[i]);
+        }
+
+        uploadFiles(formData);
+      }
+    }
+
+    function uploadFiles(formData) {
+      var userId = localStorage.getItem('userId');
+      var columnName = 'c23';
+      var xhr = new XMLHttpRequest();
+    xhr.open('POST', `http://localhost:4000/uploadFiles?userId=${userId}&columnName=${columnName}`, true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            alert('Files uploaded successfully!');
+            updateTotalScoreToDB('c23');
+          } else {
+            console.error('Failed to upload files:', xhr.statusText);
+            alert('Failed to upload files. Status: ' + xhr.status);
+          }
+        }
+      };
+
+      xhr.send(formData);
+    }
+    
+  </script>
+
+    
+</head>
+
+<body>
+
+    <table>
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Description Score Awarding Criteria</th>
+                <th>Score</th>
+                <th>Total Score</th>
+                <th>Upload(Accepted formats: PDF, Word <br>
+                    (.doc, .docx))Maximum file size: 5 MB</th>
+                <th>Uploaded Files</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2.3</td>
+                <td>Sponsored Research Projects (Excluding Institute Seed Fund)<br><br>
+                    For projects more than 5 lakhs, both PI and Co-PI will be awarded points.<br><br><br>
+                    *Note: Government funded projects other than research projects
+                    <br><br>
+            <strong>Max = 15</strong>
+                </td>
+                <td>
+
+                    <h3>Government Funded Research Projects</h3>
+
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research1" name="score1" value="15" onchange="updateTotalScore()">
+                        8 Lakh or more: 15 points
+
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research2" name="score1" value="12" onchange="updateTotalScore()">
+                        8 Lakh–5 Lakh: 12 points
+
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research3" name="score1" value="8" onchange="updateTotalScore()">
+                        5 Lakh–3 Lakh: 8 points
+
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research4" name="score1" value="6" onchange="updateTotalScore()">
+                        3 Lakh–2 Lakh: 6 points
+
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research5" name="score1" value="4" onchange="updateTotalScore()">
+                        2 Lakh–1 Lakh: 4 points
+
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research6" name="score1" value="2" onchange="updateTotalScore()">
+                        Less than 1 Lakh: 2 points
+
+                    </label>
+                    <br>
+                    <label>
+                        <input type="radio" id="score1_research7" name="score1" value="1" onchange="updateTotalScore(1)">
+                        Submitted Proposal: 1 point
+
+                    </label>
+
+                    <h3>Government Funded Non-Research project</h3>
+
+                    <label>
+                      <input type="radio" id="score1_research8" name="score2" value="12" onchange="updateTotalScore(1)">
+                      8 Lakh or more: 15 points
+
+                  </label>
+                  <br>
+                  <label>
+                      <input type="radio" id="score1_research9" name="score2" value="10" onchange="updateTotalScore(1)">
+                      8 Lakh–5 Lakh: 12 points
+
+                  </label>
+                  <br>
+                  <label>
+                      <input type="radio" id="score1_research3=10" name="score2" value="6" onchange="updateTotalScore(1)">
+                      5 Lakh–3 Lakh: 8 points
+
+                  </label>
+                  <br>
+                  <label>
+                      <input type="radio" id="score1_research11" name="score2" value="4" onchange="updateTotalScore(1)">
+                      3 Lakh–2 Lakh: 6 points
+
+                  </label>
+                  <br>
+                  <label>
+                      <input type="radio" id="score1_research12" name="score2" value="2" onchange="updateTotalScore(1)">
+                      2 Lakh–1 Lakh: 4 points
+
+                  </label>
+                  <br>
+                  <label>
+                      <input type="radio" id="score1_research13" name="score2" value="1" onchange="updateTotalScore(1)">
+                      Less than 1 Lakh: 2 points
+
+                  </label>
+                  <br>
+                  <label>
+                      <input type="radio" id="score1_research14" name="score2" value="1" onchange="updateTotalScore(1)">
+                      Submitted Proposal: 1 point
+
+                  </label>
+                    
+                </td>
+                <td><textarea id="totalScore1" name="totalScore1" rows="1" readonly></textarea></td>
+                <td>
+                  <form id="examRegistrationForm1">
+
+                    <label for="certificate1">Upload Certificate:</label>
+                    <input type="file" id="certificate1" name="certificate" accept=".pdf, .doc, .docx" onchange="updateFileNames(1)" required multiple>
+                    <small>Accepted formats: PDF, Word (.doc, .docx)</small>
+                    <br>
+                    <small>Maximum file size: 5 MB</small>
+                    <div id="error-message1"></div>
+                    <button type="button" onclick="validateFormAndSubmit(1)">Submit</button>
+                    <button type="button" id="downloadButton" style="display: none;" onclick="downloadFile()">Download</button>
+                  </form>
+                </td>
+                <td id="uploadedFileName1"></td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>

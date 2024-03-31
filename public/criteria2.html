@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 25%;
+      background-position: center top;
+      background-image: url('bvrit_logo.png');
+      margin-top: -20px;
+      background-color: #f0f8ff ;
+    }
+
+    header {
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      height: 80px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: -30px;
+      height: 100vh;
+      position: relative; /* Added */
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 20px;
+    }
+
+    button {
+      background-color: #409b43;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-right: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0a5811;
+    }
+
+    .criteria-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .criteria-box.active {
+      display: block;
+    }
+
+    .password-window {
+      display: none;
+      position: absolute; /* Changed */
+      top: calc(50% + 30px); /* Changed */
+      left: 28%;
+      transform: translateX(-50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+    }
+
+    .password-window.active {
+      display: block;
+    }
+
+    .password-window input {
+      display: block;
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .password-window button {
+      background-color: #409b43;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .password-window button:hover {
+      background-color: #0a5811;
+    }
+
+    .help-button {
+      background-color: #409b43;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-right: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    .help-textarea {
+      display: none;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+    }
+
+    .help-textarea.active {
+      display: block;
+    }
+
+    #helpTextArea {
+    display: none;
+    position: absolute;
+    background-color: #f5f5dc; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 750px; 
+    height: auto; 
+    resize: none; 
+    z-index: 999;
+    top: 350px; 
+    left: 50%; 
+    transform: translateX(-50%);    
+    }
+    .centered-content {
+      text-align: center;
+    }
+    .styled-textarea {
+      border: 1px solid #ccc; /* Add border */
+      padding: 5px; /* Add padding */
+      font-family: Arial, sans-serif; /* Set font family */
+      line-height: 1.5; /* Set line height */
+      overflow-y: auto; /* Add vertical scrollbar when content exceeds height */
+      width: 100%; /* Set width */
+      height: 200px; /* Set initial height */
+    }
+
+    .title {
+      font-size: 24px; /* Adjust font size for title */
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <img src="" alt="Logo">
+</div>
+
+<div class="container">
+  <div class="buttons">
+    <button id="changePassword">Change Password</button>
+    <button id="Profile">Profile</button>
+    <button id="criteria">Criteria</button>
+    <button id="targetSettingButton">Target Setting</button>
+    <button id="dashboard">Dashboard</button>
+    <button id="helpButton" class="help-button">Help</button>
+    <button id="logout">Logout</button>
+  </div>
+
+  <div id="helpTextArea" class="styled-textarea" readonly>
+    <b><center><span class="title">Guide to criteria</span></center></b><br><br>
+    <b> Criteria 1: Teaching - Learning</b><br>
+    <b> Criteria 2: Research and Consultancy </b><br>
+    <b> Criteria 3: Professional Development </b><br>
+    <b> Criteria 4: Student Development </b><br>
+    <b> Criteria 5: Institutional Development </b><br><br>   
+    <button id="closeHelp">Close</button>
+  </div>
+  
+
+  <div class="password-window" id="passwordWindow">
+    <input type="password" id="newPassword" placeholder="New Password">
+    <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+    <button id="submitPassword">Submit</button>
+    <button id="closeWindow">Close</button>
+  </div>
+
+  <div class="criteria-box" id="criteria-box">
+    <button id="criteria1">Criteria 1</button>
+    <button id="criteria2">Criteria 2</button>
+    <button id="criteria3">Criteria 3</button>
+    <button id="criteria4">Criteria 4</button>
+    <button id="criteria5">Criteria 5</button>
+  </div>
+
+  <!-- Repeat similar blocks for other buttons -->
+  <div class="criteria-box" id="criteria1-box">
+    <button><a href="c1.1.html" target="_blank">Criteria 1.1</a></button>
+    <button><a href="c1.2.html" target="_blank">Criteria 1.2</a></button>
+    <button><a href="c1.3.html" target="_blank">Criteria 1.3</a></button>
+    <button><a href="c1.4.html" target="_blank">Criteria 1.4</a></button>
+    <button><a href="c1.5.html" target="_blank">Criteria 1.5</a></button>
+    <button><a href="c1.6.html">Criteria 1.6</a></button>
+</div>
+
+  <div class="criteria-box" id="criteria2-box">
+    <button><a href="c2.1.html" target="_blank">Criteria 2.1</a></button>
+    <button><a href="c2.2.html" target="_blank">Criteria 2.2</a></button>
+    <button><a href="c2.3.html" target="_blank">Criteria 2.3</a></button>
+    <button><a href="c2.4.html" target="_blank">Criteria 2.4</a></button>
+    <button><a href="c2.5.html" target="_blank">Criteria 2.5</a></button>
+    <button><a href="c2.6.html" target="_blank">Criteria 2.6</a></button>
+  </div>
+  <div class="criteria-box" id="criteria3-box">
+    <button><a href="c3.1.html" target="_blank">Criteria 3.1</a></button>
+    <button><a href="c3.2.html" target="_blank">Criteria 3.2</a></button>
+    <button><a href="c3.3.html" target="_blank">Criteria 3.3</a></button>
+    <button><a href="c3.4.html" target="_blank">Criteria 3.4</a></button>
+    <button><a href="c3.5.html" target="_blank">Criteria 3.5</a></button>
+    <button><a href="c3.6.html" target="_blank">Criteria 3.6</a></button>
+    <button><a href="c3.7.html" target="_blank">Criteria 3.7</a></button>
+    <button><a href="c3.8.html" target="_blank">Criteria 3.8</a></button>
+    
+    
+  </div>
+  <div class="criteria-box" id="criteria4-box">
+    <button><a href="c4.1.html" target="_blank">Criteria 4.1</a></button>
+    <button><a href="c4.2.html" target="_blank">Criteria 4.2</a></button>
+    <button><a href="c4.3.html" target="_blank">Criteria 4.3</a></button>
+    <button><a href="c4.4.html" target="_blank">Criteria 4.4</a></button>
+    <button><a href="c4.5.html" target="_blank">Criteria 4.5</a></button>
+    <button><a href="c4.6.html" target="_blank">Criteria 4.6</a></button>
+  </div>
+  <div class="criteria-box" id="criteria5-box">
+    <button><a href="c5.1.html" target="_blank">Criteria 5.1</a></button>
+    <button><a href="c5.2.html" target="_blank">Criteria 5.2</a></button>
+    <button><a href="c5.3.html" target="_blank">Criteria 5.3</a></button>
+    <button><a href="c5.4.html" target="_blank">Criteria 5.4</a></button>
+    <button><a href="c5.5.html" target="_blank">Criteria 5.5</a></button>
+  </div>
+  <!-- Repeat similar blocks for other buttons -->
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+  var hod = localStorage.getItem('hod');
+  });
+    const criteriaButton = document.getElementById('criteria');
+    const criteriaBox = document.getElementById('criteria-box');
+    const criteria1Box = document.getElementById('criteria1-box');
+    const criteria2Box = document.getElementById('criteria2-box');
+    const criteria3Box = document.getElementById('criteria3-box');
+    const criteria4Box = document.getElementById('criteria4-box');
+    const criteria5Box = document.getElementById('criteria5-box');
+  
+    criteriaButton.addEventListener('click', () => {
+      toggleCriteriaBox(criteriaBox);
+    });
+    document.getElementById('dashboard').addEventListener('click', function() {
+  // Redirect to main.html
+  window.location.href = 'facMainDash.html';
+});
+    document.getElementById('targetSettingButton').addEventListener('click', function() {
+      // Redirect to main.html
+      window.location.href = 'targetsetting.html';
+    });
+
+    document.getElementById('Profile').addEventListener('click', function() {
+      // Redirect to main.html
+      window.location.href = 'profile.html';
+    });
+
+    document.getElementById('logout').addEventListener('click', function() {
+      // Redirect to main.html
+      window.location.href = 'login.html';
+    });
+    
+    document.getElementById('criteria1').addEventListener('click', () => {
+      toggleCriteriaBox(criteria1Box);
+    });
+    document.getElementById('criteria2').addEventListener('click', () => {
+      toggleCriteriaBox(criteria2Box);
+    });
+    document.getElementById('criteria3').addEventListener('click', () => {
+      toggleCriteriaBox(criteria3Box);
+    });
+    document.getElementById('criteria4').addEventListener('click', () => {
+      toggleCriteriaBox(criteria4Box);
+    });
+    document.getElementById('criteria5').addEventListener('click', () => {
+      toggleCriteriaBox(criteria5Box);
+    });
+  
+    // Add similar event listeners for other buttons and boxes
+  
+    function toggleCriteriaBox(box) {
+      const allBoxes = document.querySelectorAll('.criteria-box');
+      allBoxes.forEach(b => {
+        if (b !== box) {
+          b.classList.remove('active');
+        }
+      });
+      box.classList.toggle('active');
+    }
+
+    const changePasswordButton = document.getElementById('changePassword');
+  const passwordWindow = document.getElementById('passwordWindow');
+  const submitPasswordButton = document.getElementById('submitPassword');
+  const closeWindowButton = document.getElementById('closeWindow');
+
+  changePasswordButton.addEventListener('click', () => {
+    setTimeout(() => { // Added delay to ensure the window is shown below the buttons
+      passwordWindow.classList.add('active');
+    }, 100);
+  });
+
+  closeWindowButton.addEventListener('click', () => {
+    passwordWindow.classList.remove('active');
+  });
+
+  submitPasswordButton.addEventListener('click', () => {
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  if (newPassword !== confirmPassword) {
+    alert("Passwords don't match");
+    return;
+  }
+
+  // AJAX request to change the password
+  const userId = localStorage.getItem('userId'); 
+  fetch(`http://localhost:5000/changePassword?userId=${userId}&newPassword=${newPassword}`, {
+    method: 'POST'
+})
+.then(response => {
+    if (response.ok) {
+        alert("Password changed successfully");
+
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+
+        passwordWindow.classList.remove('active');
+    } else {
+        throw new Error('Failed to change password');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('Failed to change password');
+});
+});
+
+const helpButton = document.getElementById('helpButton');
+    const helpTextArea = document.getElementById('helpTextArea');
+    const closeHelpButton = document.getElementById('closeHelp'); // Close button reference
+
+
+helpButton.addEventListener('click', () => {
+  helpTextArea.style.display = helpTextArea.style.display === 'block' ? 'none' : 'block';
+});
+
+closeHelpButton.addEventListener('click', () => { // Event listener for close button
+helpTextArea.style.display = 'none';
+});
+  </script>
+
+</body>
+</html>

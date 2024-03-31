@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score Entry Table with Exam Registration</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f7a8b9;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    form {
+      margin: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 16px;
+    }
+
+    #error-message {
+      color: red;
+      margin-top: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+  <script>
+    var userId = localStorage.getItem('userId');
+    function submitTargetValues() {
+  // Get all input values from the table
+  const values = [];
+  for (let i = 1; i <= 31; i++) {
+    const inputValue = parseInt(document.getElementById('score' + i).value || 0);
+    console.log('Value is ' + inputValue);
+    values.push(inputValue);
+  }
+
+  const data = { values };
+  console.log("Sending targetValues request:", { values: values });
+
+  // Send the data to the server using fetch API
+  fetch(`http://localhost:4000/targetValues?userId=${userId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Target already set!');
+        var hod = localStorage.getItem('hod');
+        if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }    }
+      return response.json();
+    })
+    .then(result => {
+      if (result.error) {
+        throw new Error(result.message);
+      }
+      console.log(result);
+      alert('Score updated successfully!');
+      var hod = localStorage.getItem('hod');
+      if (data.hod === 1) {
+                window.location.href = "hodCriteria.html"; // Redirect to HOD criteria page
+            }
+            else if (data.hod === 2) {
+                window.location.href = "principalCriteria.html"; // Redirect to HOD criteria page
+            }
+             else {
+                window.location.href = "criteria.html"; // Redirect to criteria page
+            }  })
+    .catch(error => {
+      console.error('Error:', error.message);
+      // Display error message as alert
+      alert(error.message);
+    });
+}
+
+
+  </script>
+</head>
+<body>
+
+  <table>
+    <thead>
+      <h2>Criteria 1</h2>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1.1</td>
+        <td>New course design / Setting up a new Lab (As per curriculum)<br>
+            • 5 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score1" name="score" oninput="updateScore(1, this.value)">
+        </td>
+      </tr>
+      <!-- Repeat the same modification for other rows in Criteria 1 -->
+      <tr>
+        <td>1.2</td>
+        <td>Developing video content for one course / Case studies for one subject area<br>
+            • 6 points (max)
+        </td>
+        <td>
+          <input type="number" id="score2" name="score" oninput="updateScore(2, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>1.3</td>
+        <td>Development of content beyond curriculum/Add on course (Theory/Lab) focussing on contemporary industry requirements: 16 points
+        </td>
+        <td>
+          <input type="number" id="score3" name="score" oninput="updateScore(3, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>1.4</td>
+        <td>Student feedback (feedback collected from the students having a minimum of 75% attendance)<br>
+            • 12 points (max)<br>
+            Note: Designated Administrators allotted only one theory subject per semester will get 6 points per that theory subject  
+        </td>
+        <td>
+          <input type="number" id="score4" name="score" oninput="updateScore(4, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>1.5</td>
+        <td>Academic result (pass percentage) of students (considering one per semester) <br>
+            • 15 points (max) <br>
+            Note: Designated Administrators allotted only one theory subject per semester will get 8 points per that theory subject 
+        </td>
+        <td>
+          <input type="number" id="score5" name="score" oninput="updateScore(5, this.value)">
+        </td>
+
+      </tr>
+      <tr>
+        <td>1.6</td>
+        <td>Quality of course file prepared as per the template shared by the institute and quality of contents.<br>
+            • 6 points (max)  </td>
+        </td>
+        <td>
+          <input type="number" id="score6" name="score" oninput="updateScore(6, this.value)">
+        </td>
+        </tr>
+      <tr>
+        <td colspan="2" style="text-align:right">Total:</td>
+        <td id="totalMarks1">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+      <h2>Criteria 2</h2>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2.1</td>
+        <td>Publications & Articles / Chapters published in Books, Published with Institute affiliation.<br>
+
+            • 15points (max) <br>
+            Note: In case the paper is the result of research collaboration with other Institutes/Universities, the author at the first place of the authors of this Institute gets the points mentioned.
+        </td>
+        <td>
+          <input type="number" id="score7" name="score" oninput="updateScore(7, this.value)">
+        </td>
+      </tr>
+      <!-- Repeat the same modification for other rows in Criteria 2 -->
+      <tr>
+        <td>2.2</td>
+        <td>Discovery & Innovation (Patents, Creative works of arts, etc.) Published/ granted with Institute as an Applicant<br>
+            • 5 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score8" name="score" oninput="updateScore(8, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>2.3</td>
+        <td>Sponsored Research Projects (Excluding Institute Seed Fund)
+            For projects more than 5 lakhs, both PI and Co-PI will be awarded points.<br>
+            • 15 points (max)<br>
+            *Note: Government funded projects other than research projects 
+        </td>
+        <td>
+          <input type="number" id="score9" name="score" oninput="updateScore(9, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>2.4</td>
+        <td>Consultancy Projects carried out/ ongoing. <br>
+            • 5 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score10" name="score" oninput="updateScore(10, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>2.5</td>
+        <td>PhD/Research work supervision/co-supervision (Not more than 5 years’ tenure)<br> • 5 points (max)
+        </td>
+        <td>
+          <input type="number" id="score11" name="score" oninput="updateScore(11, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>2.6</td>
+        <td>Research Related Services (Reviewing for journals, serving in editorial roles, organizing research seminars, conferences, etc.) <br>
+            • 5 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score12" name="score" oninput="updateScore(12, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align:right">Total:</td>
+        <td id="totalMarks2">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Criteria 3 Table -->
+  <table>
+    <thead>
+      <h2>Criteria 3</h2>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>3.1</td>
+        <td>Attending Refresher courses, Methodology workshops, Training, Teaching-Learning- Evaluation, Technology Programs, Soft Skills Development Programs, Faculty Development Programs (offline/Hybrid)<br>
+            • 15 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score13" name="score" oninput="updateScore(13, this.value)">
+        </td>
+      </tr>
+      <!-- Repeat the same modification for other rows in Criteria 3 -->
+      <tr>
+        <td>3.2</td>
+        <td>Organizing Refresher courses, Methodology workshops, Training, Teaching-Learning- Evaluation, Technology Programs, Soft Skills Development Programs, Faculty Development Programs <br>
+            • 10 points (max)
+        </td>
+        <td>
+          <input type="number" id="score14" name="score" oninput="updateScore(14, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>3.3</td>
+        <td>Skilling/ Re-Skilling/ Up-Skilling through Proctored Exam certifications such as NPTEL/ Recognised Industry Certifications <br>
+            • 10 points (max)
+        </td>
+        <td>
+          <input type="number" id="score15" name="score" oninput="updateScore(15, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>3.4</td>
+        <td>Membership of professional societies and Activities Conducted <br>
+            • 10 points (max)</td>
+        </td>
+        <td>
+          <input type="number" id="score16" name="score" oninput="updateScore(16, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>3.5</td>
+        <td>Co-/Extracurricular activities <br>
+            • 3 points (max)
+        </td>
+        <td>
+          <input type="number" id="score17" name="score" oninput="updateScore(17, this.value)">
+        </td>
+      </tr>
+      
+      <tr>
+        <td>3.6</td>
+        <td>Involvement in Academic Outreach (Outside the Institute): <br>
+            • 4 points (max)
+        </td>
+        <td>
+          <input type="number" id="score18" name="score" oninput="updateScore(18, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>3.7</td>
+        <td> Involvement in Extension Activities (Social Outreach): Awareness programs on environment/ sustainability/ Community development Activities like Mentoring the School kids/ Health or Hygiene awareness programs/ Rural empowerment activities (With Student participations). <br>
+            • 5 points (max) <br>
+        </td>
+        <td>
+          <input type="number" id="score19" name="score" oninput="updateScore(19, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>3.8</td>
+        <td>Awards and Recognition<br>
+            • 3 points 
+        </td>
+        <td>
+          <input type="number" id="score20" name="score" oninput="updateScore(20, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align:right">Total:</td>
+        <td id="totalMarks3">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Criteria 4 Table -->
+  <table>
+    <thead>
+      <h2>Criteria 4</h2>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>4.1</td>
+        <td>Mentoring/Counselling effectiveness (As per the factual data available in the concerned student mentoring book / log. 
+            Also, the assessment is based on profiling of the student and student feedback)<br>
+            10 points (max)<br>
+            (As per the mentoring guidebook suggested by VEDIC)
+        </td>
+        <td>
+          <input type="number" id="score21" name="score" oninput="updateScore(21, this.value)">
+        </td>
+      </tr>
+      <!-- Repeat the same modification for other rows in Criteria 4 -->
+      <tr>
+        <td>4.2</td>
+        <td>Encouraging & Involving in Student or self-Innovation/ Incubation / Start-up activities.<br>
+            Note: For Ideathons /Hackathons /Business Plan Competition at least student team could cross first level<br>
+            8 points
+        </td>
+        <td>
+          <input type="number" id="score22" name="score" oninput="updateScore(22, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>4.3</td>
+        <td>Focused Guidance for student’s career development like Placements or GATE. <br>
+            6 points (max) – <br>
+            Note: Based on the documentation submitted and 30 hours engagement in either case
+            
+        </td>
+        <td>
+          <input type="number" id="score23" name="score" oninput="updateScore(23, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>4.4</td>
+        <td>Guiding students for participation in National Level Technical Fests / Hackathons / Competition (Design or Development) outside the campus or Student Industrial Tours /Field visits. <br>
+            6 points (Max)
+        </td>
+        <td>
+          <input type="number" id="score24" name="score" oninput="updateScore(24, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>4.5</td>
+        <td>Organizing students Hackathons/Design or Development Competitions specific to innovation / incubation/ entrepreneurship.<br>
+            5 points (Max)
+        </td>
+        <td>
+          <input type="number" id="score25" name="score" oninput="updateScore(25, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>4.6</td>
+        <td>Student Publications / Patents which includes the faculty name along with the students.<br>
+            5 points (Max)
+        </td>
+        <td>
+          <input type="number" id="score26" name="score" oninput="updateScore(26, this.value)">
+        </td>
+        </tr>
+      <tr>
+        <td colspan="2" style="text-align:right">Total:</td>
+        <td id="totalMarks4">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Criteria 5 Table -->
+  <table>
+    <thead>
+      <h2>Criteria 5</h2>
+      <tr>
+        <th>S.No</th>
+        <th>Description Score Awarding Criteria</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>5.1</td>
+        <td>Collaborative projects/MoU with Industry; Inviting guest speakers from Industry/research centres etc. <br>
+            • 10 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score27" name="score" oninput="updateScore(27, this.value)">
+        </td>
+      </tr>
+      <!-- Repeat the same modification for other rows in Criteria 5 -->
+      <tr>
+        <td>5.2</td>
+        <td>Initiate MoU/ Partnership with reputed universities/ research Centres/ research organizations/Industries Facilitator for implementation of at least one of the objectives of the MoU <br> • 5 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score28" name="score" oninput="updateScore(28, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>5.3</td>
+        <td>Establishment of Special Labs / Centre of Excellence (Beyond the curriculum)<br>
+            • 8 points (max)
+            
+        </td>
+        <td>
+          <input type="number" id="score29" name="score" oninput="updateScore(29, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>5.4</td>
+        <td>Development of Software/ Apps/Hardware useful for the Institute/ Involvement in Alumni Association activities conduct of regular meets etc-<br> 7 points (max) 
+        </td>
+        <td>
+          <input type="number" id="score30" name="score" oninput="updateScore(30, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td>5.5</td>
+        <td>Institutional Level/Department Level Responsibilities<br>
+            10 points (max)
+        </td>
+        <td>
+          <input type="number" id="score31" name="score" oninput="updateScore(31, this.value)">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align:right">Total:</td>
+        <td id="totalMarks5">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Add a text box for summing up marks -->
+  <label for="totalMarks">Grand Total Marks:</label>
+  <input type="text" id="totalMarks" readonly>
+
+  <script>
+    alert('NOTE: Once values are submitted, they cannot be altered');
+    
+
+    function updateScore(rowNumber, enteredMarks) {
+      var maxScore;
+      switch (rowNumber) {
+        case 1:
+          maxScore = 5;
+          break;
+        case 2:
+          maxScore = 6;
+          break;
+        case 3:
+          maxScore = 16;
+          break;
+        case 4:
+          maxScore = 12;
+          break;
+        case 5:
+          maxScore = 15;
+          break;
+        case 6:
+          maxScore = 6;
+          break;
+        case 7:
+          maxScore = 15;
+          break;
+          case 8:
+          maxScore = 5;
+          break;
+          case 9:
+          maxScore = 15;
+          break;
+          case 10:
+          maxScore = 5;
+          break;
+          case 11:
+          maxScore = 5;
+          break;
+          case 12:
+          maxScore = 5;
+          break;
+          case 13:
+          maxScore = 15;
+          break;
+          case 14:
+          maxScore = 10;
+          break;
+          case 15:
+          maxScore = 10;
+          break;
+          case 16:
+          maxScore = 10;
+          break;
+          case 17:
+          maxScore = 3;
+          break;
+          case 18:
+          maxScore = 4;
+          break;
+          case 19:
+          maxScore = 5;
+          break;
+          case 20:
+          maxScore = 3;
+          break;
+          case 21:
+          maxScore = 10;
+          break;
+          case 22:
+          maxScore = 8;
+          break;
+          case 23:
+          maxScore = 6;
+          break;
+          case 24:
+          maxScore = 6;
+          break;
+          case 25:
+          maxScore = 5;
+          break;
+          case 26:
+          maxScore = 5;
+          break;
+          case 27:
+          maxScore = 10;
+          break;
+          case 28:
+          maxScore = 5;
+          break;
+          case 29:
+          maxScore = 8;
+          break;
+          case 30:
+          maxScore = 7;
+          break;
+          case 31:
+          maxScore = 10;
+          break;
+      }
+
+      if (enteredMarks > maxScore) {
+          document.getElementById('score' + rowNumber).value = maxScore;
+          var errorMessage = document.getElementById('error-message-' + rowNumber);
+          if (!errorMessage) {
+          errorMessage = document.createElement('div');
+          errorMessage.id = 'error-message-' + rowNumber;
+          errorMessage.style.color = 'red';
+          errorMessage.style.marginTop = '4px';
+          document.getElementById('score' + rowNumber).parentNode.appendChild(errorMessage);
+          }
+          errorMessage.innerText = 'Cannot enter a value above the max score (' + maxScore + ') for this criteria.';
+      } 
+      else {
+          var errorMessage = document.getElementById('error-message-' + rowNumber);
+          if (errorMessage) {
+          errorMessage.innerText = '';
+          }
+      }
+
+      calculateTotalMarks();
+    }
+
+    function calculateTotalMarks() {
+      // Calculate the total marks for Criteria 1 and update the text box
+      var totalMarks1 = 0;
+      for (var i = 1; i <= 6; i++) { 
+        var enteredMarks = parseFloat(document.getElementById('score' + i).value) || 0;
+        totalMarks1 += enteredMarks;
+      }
+      document.getElementById('totalMarks1').textContent = totalMarks1;
+
+      // Calculate the total marks for Criteria 2 and update the text box
+      var totalMarks2 = 0;
+      for (var i = 7; i <= 12; i++) { 
+        var enteredMarks = parseFloat(document.getElementById('score' + i).value) || 0;
+        totalMarks2 += enteredMarks;
+      }
+      document.getElementById('totalMarks2').textContent = totalMarks2;
+
+      var totalMarks3 = 0;
+      for (var i = 13; i <= 20; i++) { 
+        var enteredMarks = parseFloat(document.getElementById('score' + i).value) || 0;
+        totalMarks3 += enteredMarks;
+      }
+      document.getElementById('totalMarks3').textContent = totalMarks3;
+
+      var totalMarks4 = 0;
+      for (var i = 21; i <= 26; i++) { // Assuming there are 5 criteria in this example for Criteria 2
+        var enteredMarks = parseFloat(document.getElementById('score' + i).value) || 0;
+        totalMarks4 += enteredMarks;
+      }
+      document.getElementById('totalMarks4').textContent = totalMarks4;
+      var totalMarks5 = 0;
+      for (var i = 27; i <= 31; i++) { // Assuming there are 5 criteria in this example for Criteria 2
+        var enteredMarks = parseFloat(document.getElementById('score' + i).value) || 0;
+        totalMarks5 += enteredMarks;
+      }
+      document.getElementById('totalMarks5').textContent = totalMarks5;
+
+      var grandTotalMarks = totalMarks1 + totalMarks2 + totalMarks3 + totalMarks4 + totalMarks5;
+      document.getElementById('totalMarks').value = grandTotalMarks;
+    }
+
+
+  </script>
+  <button onclick="submitTargetValues()">Submit Values</button>
+</body>
+</html>

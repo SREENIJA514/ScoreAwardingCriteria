@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 30%;
+            margin: 10px;
+            float: left;
+        }
+    
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    
+</head>
+<body>
+    <h1 id="facultyListHeading">Faculty List</h1> 
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Faculty Dashboard</th>
+            </tr>
+        </thead>
+        <tbody></tbody> 
+    </table>
+
+    <canvas id="doubleBarGraph"></canvas>
+
+    <!-- Include your dashboard.js script -->
+    <script src="dashboard.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dept = urlParams.get('dept'); // Corrected from userId
+            console.log('Department extracted from URL:', dept); // Corrected variable name in console.log
+            fetch(`http://localhost:5000/getDeptDetailsToP?dept=${dept}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateTable(data.users); // Update to use the 'users' property from the response
+                    updateHeading(dept); // Update heading with department name
+                })
+                .catch(error => {
+                    console.error('Error fetching department details:', error.message);
+                });
+        });
+
+
+        function updateTable(data) {
+    const tableBody = document.querySelector('table tbody');
+    const userId = localStorage.getItem('userId'); // Get the userId from localStorage
+
+    // Clear existing rows
+    tableBody.innerHTML = '';
+
+    // Populate the table with data
+    data.forEach(item => {
+        const row = tableBody.insertRow();
+        const idCell = row.insertCell(0);
+        const nameCell = row.insertCell(1);
+
+        idCell.textContent = item.id;
+        nameCell.textContent = item.name;
+
+        // Check if the current user's ID matches the userId from localStorage
+        if (item.id === parseInt(userId)) {
+            idCell.style.fontWeight = 'bold'; // Apply bold styling to the ID cell
+            nameCell.style.fontWeight = 'bold'; // Apply bold styling to the name cell
+        }
+
+        const buttonCell = row.insertCell(2);
+        const button = document.createElement('button');
+        button.textContent = `${item.name} Dashboard`;
+        button.addEventListener('click', () => {
+            window.location.href = `fac.html?id=${item.id}`; // Passing id as a parameter
+        });
+        buttonCell.appendChild(button);
+    });
+}
+
+
+        function updateHeading(department) {
+            const facultyListHeading = document.getElementById('facultyListHeading');
+            facultyListHeading.textContent = `Faculty List of ${dept}`; // Update heading with department name
+        }
+    </script>
+</body>
+</html>
